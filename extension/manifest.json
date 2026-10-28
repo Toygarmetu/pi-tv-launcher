@@ -1,0 +1,31 @@
+{
+  "manifest_version": 3,
+  "name": "TV Launcher Kiosk Yardımcısı",
+  "version": "0.1.0",
+  "description": "Kiosk modunda: her sitede Geri/Home tuşu, youtube.com/tv için TV user-agent, telefondan gelen adresleri açma.",
+  "permissions": ["declarativeNetRequest", "offscreen", "storage", "tabs", "webNavigation"],
+  "host_permissions": ["<all_urls>"],
+  "background": { "service_worker": "background.js" },
+  "declarative_net_request": {
+    "rule_resources": [{ "id": "youtube_tv", "enabled": true, "path": "rules/youtube-tv.json" }]
+  },
+  "content_scripts": [
+    {
+      "matches": ["http://localhost/*", "http://127.0.0.1/*"],
+      "js": ["bridge.js"],
+      "run_at": "document_start"
+    },
+    {
+      "matches": ["<all_urls>"],
+      "exclude_matches": ["http://localhost/*", "http://127.0.0.1/*"],
+      "js": ["keys.js"],
+      "run_at": "document_start"
+    },
+    {
+      "matches": ["https://www.youtube.com/tv*"],
+      "js": ["youtube-tv-ua.js"],
+      "run_at": "document_start",
+      "world": "MAIN"
+    }
+  ]
+}

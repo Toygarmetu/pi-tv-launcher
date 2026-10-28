@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>TV Kumanda</title>
+  <style>
+    :root { --bg: #0b0d12; --panel: #191c24; --text: #f4f6fb; --muted: #9aa3b2; --accent: #2f7cf6; color-scheme: dark; }
+    * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+    body { margin: 0; background: var(--bg); color: var(--text); font: 17px/1.4 -apple-system, system-ui, sans-serif; padding: 20px 16px 40px; }
+    h1 { font-size: 22px; margin: 0 0 16px; }
+    form { display: flex; gap: 8px; }
+    input { flex: 1; min-width: 0; font: inherit; padding: 14px; border-radius: 12px; border: 1px solid #2a2f3a; background: var(--panel); color: var(--text); }
+    button { font: inherit; border: 0; border-radius: 12px; padding: 14px 18px; background: var(--panel); color: var(--text); }
+    .primary { background: var(--accent); font-weight: 600; }
+    .status { min-height: 1.4em; color: var(--muted); font-size: 14px; margin: 8px 2px 20px; }
+    h2 { font-size: 13px; text-transform: uppercase; letter-spacing: .1em; color: var(--muted); margin: 24px 0 10px; }
+    .pad { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; max-width: 320px; margin: 0 auto; }
+    .pad button { height: 64px; font-size: 22px; }
+    .pad .ok { background: var(--accent); font-size: 17px; font-weight: 600; }
+    .row { display: flex; gap: 10px; max-width: 320px; margin: 10px auto 0; }
+    .row button { flex: 1; }
+    .bms { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+    .bms button { text-align: left; }
+  </style>
+</head>
+<body>
+  <h1>📺 TV’ye gönder</h1>
+  <form id="f">
+    <input id="u" type="url" inputmode="url" placeholder="https://… ya da YouTube linki" autocomplete="off" required>
+    <button class="primary">Aç</button>
+  </form>
+  <div class="status" id="s"></div>
+
+  <h2>Kumanda</h2>
+  <div class="pad">
+    <span></span><button data-k="up">▲</button><span></span>
+    <button data-k="left">◀</button><button class="ok" data-k="ok">OK</button><button data-k="right">▶</button>
+    <span></span><button data-k="down">▼</button><span></span>
+  </div>
+  <div class="row"><button data-k="back">Geri</button><button data-k="playpause">⏯</button><button data-k="home">Ana ekran</button></div>
+
+  <h2>Yer imleri</h2>
+  <div class="bms" id="bms"></div>
+
+  <script>
+    const status = document.getElementById('s');
+    const say = t => { status.textContent = t; };
+
+    async function post(path, body) {
+      const r = await fetch(path, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
+      return r.json();
+    }
+
+    async function open(url) {
+      try {
+        const r = await post('/api/open', { url });
+        say(r.ok ? (r.receivers ? 'TV’de açıldı ✓' : 'Gönderildi, ama TV ekranı bağlı görünmüyor') : (r.error || 'Hata'));
+      } catch { say('TV’ye ulaşılamadı'); }
+    }
+
+    document.getElementById('f').addEventListener('submit', e => {
+      e.preventDefault();
+      const u = document.getElementById('u');
+      open(u.value);
+      u.blur();
+    });
+
+    // Paylaş menüsünden ya da panodan gelen linki kolayca yapıştırabilmek için
+    const shared = new URLSearchParams(location.search).get('url');
+    if (shared) document.getElementById('u').value = shared;
+
+    document.querySelectorAll('[data-k]').forEach(b => b.addEventListener('click', () =>
+      post('/api/key', { key: b.dataset.k }).catch(() => say('TV’ye ulaşılamadı'))));
+
+    fetch('/api/config').then(r => r.json()).then(c => {
+      const box = document.getElementById('bms');
+      for (const b of c.bookmarks || []) {
+        const btn = document.createElement('button');
+        btn.textContent = b.title;
+        btn.onclick = () => open(b.url);
+        box.append(btn);
+      }
+    });
+  </script>
+</body>
+</html>

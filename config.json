@@ -1,0 +1,37 @@
+{
+  "server": { "host": "0.0.0.0", "port": 8080 },
+
+  "mediaDirs": [
+    { "name": "Filmler", "path": "~/Movies" },
+    { "name": "USB", "path": "/media" }
+  ],
+
+  "weather": {
+    "name": "İstanbul",
+    "latitude": 41.01,
+    "longitude": 28.98
+  },
+
+  "screensaver": { "idleMinutes": 5 },
+
+  "youtube": {
+    "mode": "auto"
+  },
+
+  "search": "https://www.google.com/search?q=",
+
+  "bookmarks": [
+    { "title": "Wikipedia", "url": "https://tr.wikipedia.org" },
+    { "title": "Mynet Haber", "url": "https://www.mynet.com/haber" },
+    { "title": "TRT İzle", "url": "https://www.trtizle.com" },
+    { "title": "atv", "url": "https://www.atv.com.tr" },
+    { "title": "Kanal D", "url": "https://www.kanald.com.tr" },
+    { "title": "Show TV", "url": "https://www.showtv.com.tr" },
+    { "title": "Star TV", "url": "https://www.startv.com.tr" },
+    { "title": "NOW", "url": "https://www.nowtv.com.tr" },
+    { "title": "tabii", "url": "https://www.tabii.com" },
+    { "title": "Vimeo", "url": "https://vimeo.com/watch" },
+    { "title": "Dailymotion", "url": "https://www.dailymotion.com" },
+    { "title": "Google", "url": "https://www.google.com" }
+  ]
+}
